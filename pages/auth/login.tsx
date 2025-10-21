@@ -37,7 +37,7 @@ const Login = () => {
         email: loginDetails.email,
         password: hashPassword,
       });
-      console.log("Login success:", reqLogin.data);
+
       if (reqLogin.data && reqLogin.status === 200) {
         toast.success("Login successful");
         Cookies.set("session_token", reqLogin.data.token, { expires: 1 }); // set cookie for 1 day...
