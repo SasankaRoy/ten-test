@@ -34,9 +34,10 @@ axiosInstance.interceptors.response.use(
   (error) => {
     // Handle response error
     if (error.status === 403) {
-      setTimeout(() => {
-        window.location.href = "/auth/login";
-      }, 800);
+      window.location.href = "/auth/login";
+      // setTimeout(() => {
+      //   window.location.href = "/auth/login";
+      // }, 800);
       toast.error("Un-authenticated");
     }
 
