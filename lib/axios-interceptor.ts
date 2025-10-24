@@ -39,7 +39,10 @@ axiosInstance.interceptors.response.use(
       //   window.location.href = "/auth/login";
       // }, 800);
       toast.error("Un-authenticated");
+      return Promise.reject(error);
     }
+    // toast.error("Un-authenticated");
+      // console.log("Un-authenticated",error);
 
     return Promise.reject(error);
   }

@@ -6,6 +6,9 @@ import Head from "next/head";
 import { useQuery } from "@tanstack/react-query";
 import axiosInstance from "@/lib/axios-interceptor";
 import CircularProgress from "@mui/material/CircularProgress";
+import { Footer } from "@/components/common/Footer/Footer";
+import { Navbar } from "@/components/common/Navbar/Navbar";
+import { NewEntry } from "@/components/common/Models/NewEntry/NewEntry";
 
 type Status = "COMPLETED" | "INCOMPLETE" | "MISSING";
 
@@ -35,6 +38,7 @@ const statusColors = (totalHours: number) => {
 export default function Home() {
   const [currentPage, setCurrentPage] = useState(1);
   const [perPage, setPerPage] = useState(5);
+  const [newEntry, setNewEntry] = useState(false);
   const getTimeSheet = async () => {
     try {
       const timeSheets = await axiosInstance.post("/get-timesheet", {
@@ -45,7 +49,7 @@ export default function Home() {
       return timeSheets.data;
     } catch (error: any) {
       console.log("Error fetching timesheets:", error);
-      return error.response.data.message || "Error fetching timesheets";
+      throw Error(error || "Error fetching timesheets");
     }
   };
 
@@ -53,8 +57,6 @@ export default function Home() {
     queryKey: ["get_timesheets", currentPage, perPage],
     queryFn: getTimeSheet,
   });
-
-  console.log(data);
 
   const totalPages = data ? data.totalPages : 1;
 
@@ -85,14 +87,7 @@ export default function Home() {
             </>
           ) : (
             <>
-              <header className=" bg-white px-10 py-3 flex justify-between items-center">
-                <h1 className="text-[2dvw] font-bold text-(--text-mainColor)">
-                  ticktock
-                </h1>
-                <div className="text-gray-600 text-[1dvw] font-medium">
-                  John Doe ▾
-                </div>
-              </header>
+              <Navbar />
               <div className="min-h-screen flex justify-center items-center bg-gray-50">
                 <main className="2xl:w-[80%] xl:w-[80%] lg:w-[80%] lg:portrait:w-[90%] md:w-[90%] w-[95%]  mx-auto p-6">
                   <div className="bg-white rounded-xl shadow-sm p-6">
@@ -130,7 +125,7 @@ export default function Home() {
                           </tr>
                         </thead>
                         <tbody>
-                          {data.timesheets.map(
+                          {data?.timesheets?.map(
                             (row: {
                               week: number;
                               id: number;
@@ -158,12 +153,21 @@ export default function Home() {
                                 </td>
                                 <td className="py-4 2xl:text-[1dvw] xl:text-[1dvw] lg:text-[1dvw] md:text-[1.8dvw] text-[3.3dvw] px-4 text-right text-blue-600 cursor-pointer">
                                   {statusColors(row.totalHours).label ===
-                                  "MISSING"
-                                    ? "Create"
-                                    : statusColors(row.totalHours).label ===
-                                      "INCOMPLETE"
-                                    ? "Update"
-                                    : "View"}
+                                  "MISSING" ? (
+                                    <button
+                                      className="cursor-pointer"
+                                      onClick={() => {
+                                        setNewEntry(true);
+                                      }}
+                                    >
+                                      Create
+                                    </button>
+                                  ) : statusColors(row.totalHours).label ===
+                                    "INCOMPLETE" ? (
+                                    "Update"
+                                  ) : (
+                                    "View"
+                                  )}
                                 </td>
                               </tr>
                             )
@@ -195,7 +199,7 @@ export default function Home() {
                         >
                           <ChevronLeft className="w-4 h-4" />
                         </button>
-                        {Array.from({ length: data.totalPages }, (_, i) => (
+                        {Array.from({ length: data?.totalPages }, (_, i) => (
                           <button
                             key={i}
                             onClick={() => setCurrentPage(i + 1)}
@@ -218,13 +222,12 @@ export default function Home() {
                       </div>
                     </div>
                   </div>
-                  <footer className="mt-8 text-center 2xl:text-[1.1dvw] xl:text-[1.1dvw] lg:text-[1.1dvw] md:text-[1.8dvw] text-[3.3dvw] text-gray-500 bg-white py-8 rounded-lg ">
-                    © 2024 tentwenty. All rights reserved.
-                  </footer>
+                  <Footer />
                 </main>
               </div>
             </>
           )}
+          {newEntry && <NewEntry setNewEntry={setNewEntry} />}
         </>
       )}
     </>

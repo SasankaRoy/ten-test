@@ -254,7 +254,7 @@ const GetTimesheet = async (req: NextApiRequest, res: NextApiResponse) => {
         .status(405)
         .json({ message: "Method not allowed", status: "Error" });
     }
-    await delay(1000);
+    await delay(2000);
 
     const { email, role } = await Session(req, res);
     console.log("Session validated for timesheet fetch:", email, role);
